@@ -36,6 +36,7 @@ const SpotTheDifference = () => {
     const [time, setTime] = useState(STAGE_TIME);
     const [life, setLife] = useState(STAGE_LIFE);
     const [hint, setHint] = useState(STAGE_HINT);
+    const [isOver, setIsOver] = useState(true);
 
     const getListState = () => {
         let states = new Array(stagePoint[stage].length).fill(true);
@@ -43,9 +44,9 @@ const SpotTheDifference = () => {
     };
     const [pointStates, setPointStates] = useState(getListState);
 
-    useEffect(() => {
+    // useEffect(() => {
 
-    }, []);
+    // }, []);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -73,7 +74,6 @@ const SpotTheDifference = () => {
     const settingGameOver = () => {
 
     };
-
 
     const onClickImage = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         const target = event.currentTarget;
@@ -166,9 +166,11 @@ const SpotTheDifference = () => {
         };
     */
 
+
     return (
         <div className="w-screen h-screen bg-stone-100">
             <div className="py-10 w-full h-full justify-items-center ">
+
                 <div className="text-4xl font-bold">stage {stage}</div>
                 <div className="w-4/5 flex row gap-x-10 justify-between">
                     <div className="flex  gap-x-1 ">
@@ -187,37 +189,45 @@ const SpotTheDifference = () => {
                     </div>
                 </div>
 
-                <div className="w-[650px] h-[400px] bg-red-100 flex">
+                {!isOver &&
+                    <div className="w-[650px] h-[400px] bg-red-100 flex">
+                        <div className="w-1/2 h-full right-0 relative flex items-center bg-blue-300">
+                            <img src={stageImg[stage][0]} alt="" className="absolute w-full h-full object-contain" />
 
-                    <div className="w-1/2 h-full right-0 relative flex items-center bg-blue-300">
-                        <img src={stageImg[stage][0]} alt="" className="absolute w-full h-full object-contain" />
+                            <div className="absolute w-full h-full" onClick={onClickImage}>
 
-                        <div className="absolute w-full h-full" onClick={onClickImage}>
-
-                            {
-                                stagePoint[stage].map((p, index) => (
-                                    <div className={"absolute w-[30px] h-[30px] rounded-full border-4 border-[#1c1917] opacity-80 -translate-x-1/2 translate-y-1/2 " + stagePoint[stage][index].pos} key={"point_" + index}></div>
-                                ))
-                            }
+                                {
+                                    stagePoint[stage].map((p, index) => (
+                                        <div className={"absolute w-[30px] h-[30px] rounded-full border-4 border-[#1c1917] opacity-80 -translate-x-1/2 translate-y-1/2 " + stagePoint[stage][index].pos} key={"point_" + index}></div>
+                                    ))
+                                }
+                            </div>
                         </div>
-                    </div>
 
-                    {/* <div className="w-1 h-full left-1/2 items-center border-4 border-dotted border-[#1c1917]"></div> */}
+                        {/* <div className="w-1 h-full left-1/2 items-center border-4 border-dotted border-[#1c1917]"></div> */}
 
-                    <div className="w-1/2 h-full right-0 relative flex items-center bg-blue-400">
-                        <img src={stageImg[stage][0]} alt="" className="absolute w-full h-full object-contain" />
+                        <div className="w-1/2 h-full right-0 relative flex items-center bg-blue-400">
+                            <img src={stageImg[stage][0]} alt="" className="absolute w-full h-full object-contain" />
 
-                        <div className="absolute w-full h-full" onClick={onClickImage}>
+                            <div className="absolute w-full h-full" onClick={onClickImage}>
 
-                            {
-                                stagePoint[stage].map((p, index) => (
-                                    <div className={"absolute w-[30px] h-[30px] rounded-full border-4 border-[#ae8366] opacity-80 -translate-x-1/2 translate-y-1/2 " + stagePoint[stage][index].pos} key={"point_" + index}></div>
-                                ))
-                            }
+                                {
+                                    stagePoint[stage].map((p, index) => (
+                                        <div className={"absolute w-[30px] h-[30px] rounded-full border-4 border-[#ae8366] opacity-80 -translate-x-1/2 translate-y-1/2 " + stagePoint[stage][index].pos} key={"point_" + index}></div>
+                                    ))
+                                }
+                            </div>
                         </div>
+
                     </div>
-                </div>
-                
+                }
+
+                {isOver &&
+                    <div className="w-[650px] h-[400px] bg-neutral-900 flex justify-center flex-col items-center gap-4">
+                        <div className="text-3xl font- text-white">GAME OVER</div>
+                        <div className=" bg-gray-200 rounded-full text-2xl font-bold w-36 h-10 place-content-center">RESET</div>
+                    </div>
+                }
                 <div className="w-4/5 flex row gap-x-10 justify-between">
                     <div className="text-3xl font-semibold">Count: {pointStates.length} / {pointStates.filter((s) => s === true).length}</div>
                     <div className="flex gap-2">
@@ -225,6 +235,8 @@ const SpotTheDifference = () => {
                         <div className="text-3xl font-semibold">{hint}</div>
                     </div>
                 </div>
+
+
             </div>
         </div>
     );
