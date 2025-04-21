@@ -91,13 +91,12 @@ const SpotTheDifference = () => {
         }
     }, [life]);
 
-    // useEffect(() => {
-    //     console.log("pointStates.filter((s) => s === true).length: " + pointStates.filter((s) => s === true).length + " / pointStates.length: " + pointStates.length);
-
-    //     if (pointStates.filter((s) => s === true).length === pointStates.length) {
-    //         console.log('winnn');
-    //     }
-    // }, [pointStates]);
+    useEffect(() => {
+        if (pointStates.filter((s) => s === true).length === pointStates.length) {
+            console.log('winnn');
+            settingStage(false);
+        }
+    }, [pointStates]);
 
     const settingGameOver = () => {
 
@@ -137,8 +136,12 @@ const SpotTheDifference = () => {
         if (successIdx === -1) {
             setLife((prev) => prev - 1);
         } else {
-            pointStates[successIdx] = true;
-            console.log("### successIdx: " + successIdx + " / pointStates: " + pointStates);
+            pointStates[successIdx] = !pointStates[successIdx];
+            setPointStates([...pointStates]);
+            
+            
+            // pointStates[successIdx] = true;
+            // console.log("### successIdx: " + successIdx + " / pointStates: " + pointStates);
 
         }
     };
