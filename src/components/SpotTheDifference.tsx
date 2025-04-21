@@ -29,6 +29,11 @@ const SpotTheDifference = () => {
             { left: 50, bottom: 50, pos: "left-[50%] bottom-[50%]" },
             { left: 40, bottom: 45, pos: "left-[40%] bottom-[45%]" },
             { left: 30, bottom: 35, pos: "left-[30%] bottom-[35%]" }
+        ],
+        [
+            { left: 50, bottom: 50, pos: "left-[50%] bottom-[50%]" },
+            { left: 40, bottom: 45, pos: "left-[40%] bottom-[45%]" },
+            { left: 30, bottom: 35, pos: "left-[30%] bottom-[35%]" }
         ]
     ];
 
@@ -36,10 +41,19 @@ const SpotTheDifference = () => {
     const [time, setTime] = useState(STAGE_TIME);
     const [life, setLife] = useState(STAGE_LIFE);
     const [hint, setHint] = useState(STAGE_HINT);
-    const [isOver, setIsOver] = useState(true);
+    const [isOver, setIsOver] = useState(false);
+    const intervalRef = useRef<any>(null);
+
+    const settingStage = (isReset: boolean) => {
+        setStage(isReset ? 0 : (prev) => prev + 1);
+        setTime(STAGE_TIME);
+        setLife(STAGE_LIFE);
+        setHint(STAGE_HINT);
+        setPointStates(getListState)
+    };
 
     const getListState = () => {
-        let states = new Array(stagePoint[stage].length).fill(true);
+        let states = new Array(stagePoint[stage].length).fill(false);
         return states;
     };
     const [pointStates, setPointStates] = useState(getListState);
@@ -49,27 +63,41 @@ const SpotTheDifference = () => {
     // }, []);
 
     useEffect(() => {
-        const timer = setInterval(() => {
+
+        intervalRef.current = setInterval(() => {
             setTime((prevTime) => prevTime - 1);
         }, 1000);
 
+        // const timer = setInterval(() => {
+        //     setTime((prevTime) => prevTime - 1);
+        // }, 1000);
+
         if (time <= 0) {
-            clearInterval(timer);
-            console.log('타이머가 종료되었습니다.');
+            clearInterval(intervalRef.current);
+            // clearInterval(timer);
+            setIsOver(true);
         }
 
         return () => {
-            clearInterval(timer);
+            clearInterval(intervalRef.current);
+            // clearInterval(timer);
         };
     }, [time]);
 
-    const settingStage = (isReset: boolean) => {
-        setStage(isReset ? 0 : (prev) => prev + 1);
-        setTime(STAGE_TIME);
-        setLife(STAGE_LIFE);
-        setHint(STAGE_HINT);
-        setPointStates(getListState)
-    };
+    useEffect(() => {
+        if (life <= 0) {
+            clearInterval(intervalRef.current);
+            setIsOver(true);
+        }
+    }, [life]);
+
+    // useEffect(() => {
+    //     console.log("pointStates.filter((s) => s === true).length: " + pointStates.filter((s) => s === true).length + " / pointStates.length: " + pointStates.length);
+
+    //     if (pointStates.filter((s) => s === true).length === pointStates.length) {
+    //         console.log('winnn');
+    //     }
+    // }, [pointStates]);
 
     const settingGameOver = () => {
 
@@ -95,7 +123,8 @@ const SpotTheDifference = () => {
         console.log("#### clickX: " + clickX + " / clickY: " + clickY); // 클릭 한 곳의 좌측 하단 기준 좌표 퍼센테이지지
 
         points.forEach(function (p, i) {
-            if (!pointStates[stage][i]) {
+            // console.log("#### p: " + JSON.stringify(p) + " / pointStates["+i+"]: " + pointStates[i]);
+            if (!pointStates[i]) {
                 // console.log("#### pointX: " + pointX + " / pointY: " + pointY);
                 if (Math.abs(clickX - p.left) <= 5 && Math.abs(clickY - p.bottom) <= 5) {
                     // console.log("#### x: " + x + " / y: " + y + " / width: " + width + " / height: " + height + " / clickX: " + clickX + " / clickY: " + clickY);
@@ -104,6 +133,14 @@ const SpotTheDifference = () => {
                 }
             }
         });
+
+        if (successIdx === -1) {
+            setLife((prev) => prev - 1);
+        } else {
+            pointStates[successIdx] = true;
+            console.log("### successIdx: " + successIdx + " / pointStates: " + pointStates);
+
+        }
     };
 
     /*
@@ -171,12 +208,13 @@ const SpotTheDifference = () => {
         <div className="w-screen h-screen bg-stone-100">
             <div className="py-10 w-full h-full justify-items-center ">
 
-                <div className="text-4xl font-bold">stage {stage}</div>
+                <div className="text-4xl font-bold">stage {stage + 1}</div>
                 <div className="w-4/5 flex row gap-x-10 justify-between">
                     <div className="flex  gap-x-1 ">
                         {
                             [...Array(life)].map((l, i) => (
-                                <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/heart-3-fill.png'} alt="" key={"heart_on_" + i} className="w-9 object-contain" />
+                                // <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/'+(life > i ? 'heart-3-fill.png' : 'heart-3-line.png')} alt="" key={"heart_" + i} className="w-9 object-contain" />
+                                <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/heart-3-fill.png'} alt="" key={"heart_" + i} className="w-9 object-contain" />
 
                             ))
                         }
@@ -198,7 +236,7 @@ const SpotTheDifference = () => {
 
                                 {
                                     stagePoint[stage].map((p, index) => (
-                                        <div className={"absolute w-[30px] h-[30px] rounded-full border-4 border-[#1c1917] opacity-80 -translate-x-1/2 translate-y-1/2 " + stagePoint[stage][index].pos} key={"point_" + index}></div>
+                                        <div className={"absolute w-[30px] h-[30px] rounded-full border-4 border-[#ae8366] opacity-80 -translate-x-1/2 translate-y-1/2 " + (pointStates[index] === true ? "visible " : "invisible ") + stagePoint[stage][index].pos} key={"point_" + index}></div>
                                     ))
                                 }
                             </div>
@@ -210,10 +248,9 @@ const SpotTheDifference = () => {
                             <img src={stageImg[stage][0]} alt="" className="absolute w-full h-full object-contain" />
 
                             <div className="absolute w-full h-full" onClick={onClickImage}>
-
                                 {
                                     stagePoint[stage].map((p, index) => (
-                                        <div className={"absolute w-[30px] h-[30px] rounded-full border-4 border-[#ae8366] opacity-80 -translate-x-1/2 translate-y-1/2 " + stagePoint[stage][index].pos} key={"point_" + index}></div>
+                                        <div className={"absolute w-[30px] h-[30px] rounded-full border-4 border-[#ae8366] opacity-80 -translate-x-1/2 translate-y-1/2 " + (pointStates[index] === true ? "visible " : "invisible ") + stagePoint[stage][index].pos} key={"point_" + index}></div>
                                     ))
                                 }
                             </div>
@@ -229,7 +266,7 @@ const SpotTheDifference = () => {
                     </div>
                 }
                 <div className="w-4/5 flex row gap-x-10 justify-between">
-                    <div className="text-3xl font-semibold">Count: {pointStates.length} / {pointStates.filter((s) => s === true).length}</div>
+                    <div className="text-3xl font-semibold">Count: {pointStates.filter((s) => s === true).length} / {pointStates.length}</div>
                     <div className="flex gap-2">
                         <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/lightbulb-line.png'} alt="" className="w-9 object-contain" />
                         <div className="text-3xl font-semibold">{hint}</div>
