@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 const SpotTheDifference = () => {
     const STAGE_LIFE: number = 3;
     const STAGE_HINT: number = 2;
-    const STAGE_TIME: number = 120;
+    const STAGE_TIME: number = 105;
 
     // const handleClick = useCallback(() => {
     //     doSomething();
@@ -12,29 +12,56 @@ const SpotTheDifference = () => {
 
     // 스테이지 이미지
     const stageImg: string[][] = [
+        // [
+        //     process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_1_1.png',
+        //     process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_1_2.png'
+        // ],
         [
-            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_1_1.png',
-            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_1_2.png'
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_1_1.png',
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_1_2.png'
         ],
         [
-            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_1_1.png',
-            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_1_2.png'
-        ]
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_2_1.png',
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_2_2.png'
+        ],
+        [
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_3_1.png',
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_3_2.png'
+        ],
+        [
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_4_1.png',
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_4_2.png'
+        ],
     ];
 
     // 이미지 정답 좌표
     interface point { left: number, bottom: number, pos: string };
     const stagePoint: point[][] = [
         [
-            { left: 50, bottom: 50, pos: "left-[50%] bottom-[50%]" },
-            { left: 40, bottom: 45, pos: "left-[40%] bottom-[45%]" },
-            { left: 30, bottom: 35, pos: "left-[30%] bottom-[35%]" }
+            { left: 50.5, bottom: 72.5, pos: "left-[50.5%] bottom-[72.5%]" },
+            { left: 38, bottom: 40.5, pos: "left-[38%] bottom-[40.5%]" },
+            { left: 68.5, bottom: 40.5, pos: "left-[68.5%] bottom-[40.5%]" }
         ],
         [
-            { left: 50, bottom: 50, pos: "left-[50%] bottom-[50%]" },
-            { left: 40, bottom: 45, pos: "left-[40%] bottom-[45%]" },
-            { left: 30, bottom: 35, pos: "left-[30%] bottom-[35%]" }
-        ]
+            { left: 52.5, bottom: 66.5, pos: "left-[52.5%] bottom-[66.5%]" },
+            { left: 62.5, bottom: 50.5, pos: "left-[62.5%] bottom-[50.5%]" },
+            { left: 82.5, bottom: 49.5, pos: "left-[82.5%] bottom-[49.5%]" }
+        ],
+        [
+            { left: 17, bottom: 61.5, pos: "left-[17%] bottom-[61.5%]" },
+            { left: 37, bottom: 49, pos: "left-[37%] bottom-[50%]" },
+            { left: 59.5, bottom: 44, pos: "left-[59.5%] bottom-[44%]" }
+        ],
+        [
+            { left: 41, bottom: 67.5, pos: "left-[41%] bottom-[67.5%]" },
+            { left: 64, bottom: 62.5, pos: "left-[64%] bottom-[62.5%]" },
+            { left: 87.5, bottom: 48.5, pos: "left-[87.5%] bottom-[48.5%]" }
+        ],
+        // [
+        //     { left: 50, bottom: 50, pos: "left-[50%] bottom-[50%]" },
+        //     { left: 40, bottom: 45, pos: "left-[40%] bottom-[45%]" },
+        //     { left: 30, bottom: 35, pos: "left-[30%] bottom-[35%]" }
+        // ]
     ];
 
     const [stage, setStage] = useState(0);
@@ -42,14 +69,26 @@ const SpotTheDifference = () => {
     const [life, setLife] = useState(STAGE_LIFE);
     const [hint, setHint] = useState(STAGE_HINT);
     const [isOver, setIsOver] = useState(false);
+    const [type, setType] = useState(0); // over, ing, clear
     const intervalRef = useRef<any>(null);
 
     const settingStage = (isReset: boolean) => {
-        setStage(isReset ? 0 : (prev) => prev + 1);
-        setTime(STAGE_TIME);
-        setLife(STAGE_LIFE);
-        setHint(STAGE_HINT);
-        setPointStates(getListState)
+        setTimeout(() => {
+            setStage(isReset ? 0 : (prev) => prev + 1);
+            setTime(STAGE_TIME);
+            setLife(STAGE_LIFE);
+            setHint(STAGE_HINT);
+            setPointStates(getListState)
+            setType(0);  
+        }, isReset ? 0 : 1000);
+
+        // setStage(isReset ? 0 : (prev) => prev + 1);
+        // setTime(STAGE_TIME);
+        // setLife(STAGE_LIFE);
+        // setHint(STAGE_HINT);
+        // setPointStates(getListState)
+        // setType(0);
+        // setIsOver(false);
     };
 
     const getListState = () => {
@@ -75,7 +114,8 @@ const SpotTheDifference = () => {
         if (time <= 0) {
             clearInterval(intervalRef.current);
             // clearInterval(timer);
-            setIsOver(true);
+            // setIsOver(true);
+            setType(-1);
         }
 
         return () => {
@@ -87,14 +127,21 @@ const SpotTheDifference = () => {
     useEffect(() => {
         if (life <= 0) {
             clearInterval(intervalRef.current);
-            setIsOver(true);
+            // setIsOver(true);
+            setType(-1);
         }
     }, [life]);
 
     useEffect(() => {
         if (pointStates.filter((s) => s === true).length === pointStates.length) {
-            console.log('winnn');
-            settingStage(false);
+            // console.log('winnn');
+            console.log('winnn stage: ' + stage + " / stageImg.length: " + stageImg.length);
+            if (stage < stageImg.length - 1) {
+                settingStage(false);
+            } else {
+                clearInterval(intervalRef.current);
+                setType(1);
+            }
         }
     }, [pointStates]);
 
@@ -138,8 +185,6 @@ const SpotTheDifference = () => {
         } else {
             pointStates[successIdx] = !pointStates[successIdx];
             setPointStates([...pointStates]);
-            
-            
             // pointStates[successIdx] = true;
             // console.log("### successIdx: " + successIdx + " / pointStates: " + pointStates);
 
@@ -209,52 +254,58 @@ const SpotTheDifference = () => {
 
     return (
         <div className="w-screen h-screen bg-stone-100">
-            <div className="py-10 w-full h-full justify-items-center ">
-
+            <div className="py-10 w-full h-full justify-items-center space-y-2">
                 <div className="text-4xl font-bold">stage {stage + 1}</div>
                 <div className="w-4/5 flex row gap-x-10 justify-between">
-                    <div className="flex  gap-x-1 ">
+                    <div className="flex gap-x-1">
                         {
-                            [...Array(life)].map((l, i) => (
-                                // <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/'+(life > i ? 'heart-3-fill.png' : 'heart-3-line.png')} alt="" key={"heart_" + i} className="w-9 object-contain" />
-                                <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/heart-3-fill.png'} alt="" key={"heart_" + i} className="w-9 object-contain" />
-
+                            [...Array(STAGE_LIFE)].map((l, i) => (
+                                <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/heart-3-fill.png'} alt="" key={"heart_" + i} className={"w-9 object-contain " + (life > i ? "block " : "animate-fadeOut")} />
                             ))
                         }
+                        {/* {
+                            [...Array(STAGE_LIFE)].map((l, i) => (
+                                <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/heart-3-line.png'} alt="" key={"heart_" + i} className={"w-9 object-contain " + (life <= i ? "block " : "hidden ")} />
+                            ))
+                        } */}
                     </div>
                     <div className="flex gap-2">
                         <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/timer-2-line.png'} alt="" className="w-9 object-contain" />
-                        {/* <div className={"text-3xl font-semibold ${time > 10 ? text-black : text-red-50}"}>{time}</div> */}
-                        {/* <div className={"text-3xl font-semibold ${time ? "" : ""}"}>{time}</div> */}
-                        <div className={"text-3xl font-semibold " + (time > 10 ? "text-black" : "text-red-700")}>{time}</div>
+                        <div className={"w-12 text-left text-3xl font-semibold " + (time > 10 ? "text-black" : "text-red-700")}>{time}</div>
                     </div>
                 </div>
 
-                {!isOver &&
-                    <div className="w-[650px] h-[400px] bg-red-100 flex">
-                        <div className="w-1/2 h-full right-0 relative flex items-center bg-blue-300">
+                {type === 1 &&
+                    <div className="w-[650px] h-[400px] bg-neutral-900 flex justify-center flex-col items-center gap-4 animate-fade duration-150">
+                        <div className="text-3xl font- text-white animate-bounce">GAME CLEAR</div>
+                        <div className=" bg-gray-200 rounded-full text-2xl font-bold w-36 h-10 place-content-center" onClick={() => settingStage(true)} >RESET</div>
+                    </div>
+                }
+
+                {type === 0 &&
+                    <div className="w-[650px] h-[400px] flex transition-all transition-discrete duration-300">
+                        <div className="w-1/2 h-full right-0 relative flex items-center border-r-2">
                             <img src={stageImg[stage][0]} alt="" className="absolute w-full h-full object-contain" />
 
                             <div className="absolute w-full h-full" onClick={onClickImage}>
 
                                 {
                                     stagePoint[stage].map((p, index) => (
-                                        <div className={"absolute w-[30px] h-[30px] rounded-full border-4 border-[#ae8366] opacity-80 -translate-x-1/2 translate-y-1/2 " + (pointStates[index] === true ? "visible " : "invisible ") + stagePoint[stage][index].pos} key={"point_" + index}></div>
+                                        // <div className={"absolute w-[30px] h-[30px] rounded-full border-4 border-[#ae8366] opacity-80 -translate-x-1/2 translate-y-1/2 " + (pointStates[index] === true ? "visible " : "invisible ") + stagePoint[stage][index].pos + " animation-scale-up"} key={"point_" + index}></div>
+                                        <div className={"absolute w-[30px] ml-[-15px] h-[30px] mb-[-15px] rounded-full border-4 border-[#ae8366] opacity-80 origin-center " + (pointStates[index] === true ? "block " : "hidden ") + stagePoint[stage][index].pos + " animate-scaleUp"} key={"point_" + index}></div>
                                     ))
                                 }
                             </div>
                         </div>
 
-                        {/* <div className="w-1 h-full left-1/2 items-center border-4 border-dotted border-[#1c1917]"></div> */}
-
-                        <div className="w-1/2 h-full right-0 relative flex items-center bg-blue-400">
-                            <img src={stageImg[stage][0]} alt="" className="absolute w-full h-full object-contain" />
+                        <div className="w-1/2 h-full right-0 relative flex items-center border-l-2">
+                            <img src={stageImg[stage][1]} alt="" className="absolute w-full h-full object-contain" />
 
                             <div className="absolute w-full h-full" onClick={onClickImage}>
                                 {
                                     stagePoint[stage].map((p, index) => (
-                                        <div className={"absolute w-[30px] h-[30px] rounded-full border-4 border-[#ae8366] opacity-80 -translate-x-1/2 translate-y-1/2 " + (pointStates[index] === true ? "visible " : "invisible ") + stagePoint[stage][index].pos} key={"point_" + index}></div>
-                                    ))
+                                        <div className={"absolute w-[30px] ml-[-15px] h-[30px] mb-[-15px] rounded-full border-4 border-[#ae8366] opacity-80 origin-center " + (pointStates[index] === true ? "block " : "hidden ") + stagePoint[stage][index].pos + " animate-scaleUp"} key={"point_" + index}></div>
+                                     ))
                                 }
                             </div>
                         </div>
@@ -262,12 +313,13 @@ const SpotTheDifference = () => {
                     </div>
                 }
 
-                {isOver &&
-                    <div className="w-[650px] h-[400px] bg-neutral-900 flex justify-center flex-col items-center gap-4">
-                        <div className="text-3xl font- text-white">GAME OVER</div>
-                        <div className=" bg-gray-200 rounded-full text-2xl font-bold w-36 h-10 place-content-center">RESET</div>
+                {type === -1 &&
+                    <div className="w-[650px] h-[400px] bg-neutral-900 flex justify-center flex-col items-center gap-4 animate-fade duration-150">
+                        <div className="text-3xl font- text-white animate-bounce">GAME OVER</div>
+                        <div className=" bg-gray-200 rounded-full text-2xl font-bold w-36 h-10 place-content-center" onClick={() => settingStage(true)} >RESET</div>
                     </div>
                 }
+
                 <div className="w-4/5 flex row gap-x-10 justify-between">
                     <div className="text-3xl font-semibold">Count: {pointStates.filter((s) => s === true).length} / {pointStates.length}</div>
                     <div className="flex gap-2">
@@ -275,7 +327,6 @@ const SpotTheDifference = () => {
                         <div className="text-3xl font-semibold">{hint}</div>
                     </div>
                 </div>
-
 
             </div>
         </div>
