@@ -6,6 +6,7 @@ import { HashRouter, Routes, Route } from 'react-router-dom';
 import MenuBar from './components/MenuBar';
 import Home from './components/Home';
 import SpotTheDifference from './components/SpotTheDifference';
+import FindOldArtwork from './components/FindOldArtwork';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/" element={<Home />} />
           {/* <Route path="/" element={<SpotTheDifference />} /> */}
           <Route path="/SpotTheDifference" element={<SpotTheDifference />} />
+          <Route path="/FindOldArtwork" element={<FindOldArtwork />} />
         </Routes>
       </HashRouter>
 

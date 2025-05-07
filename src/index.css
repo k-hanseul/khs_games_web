@@ -1,6 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-gothic.css');
+@import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square.css');
+@import url('https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css');
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+@font-face {
+  font-family: 'Ownglyph_ParkDaHyun';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2411-3@1.0/Ownglyph_ParkDaHyun.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
 
 body {
   margin: 0;
@@ -9,6 +19,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color-scheme: only light;
+  font-family: 'Ownglyph_ParkDaHyun';
 }
 
 code {

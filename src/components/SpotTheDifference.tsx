@@ -1,21 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import { twMerge } from 'tailwind-merge';
+import { motion, AnimatePresence, easeIn } from 'framer-motion';
 
 const SpotTheDifference = () => {
     const STAGE_LIFE: number = 3;
     const STAGE_HINT: number = 2;
-    const STAGE_TIME: number = 105;
-
-    // const handleClick = useCallback(() => {
-    //     doSomething();
-    // }, [dependency]);
+    const STAGE_TIME: number = 50;
 
     // 스테이지 이미지
     const stageImg: string[][] = [
-        // [
-        //     process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_1_1.png',
-        //     process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_1_2.png'
-        // ],
         [
             process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_1_1.png',
             process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_1_2.png'
@@ -57,38 +50,25 @@ const SpotTheDifference = () => {
             { left: 64, bottom: 62.5, pos: "left-[64%] bottom-[62.5%]" },
             { left: 87.5, bottom: 48.5, pos: "left-[87.5%] bottom-[48.5%]" }
         ],
-        // [
-        //     { left: 50, bottom: 50, pos: "left-[50%] bottom-[50%]" },
-        //     { left: 40, bottom: 45, pos: "left-[40%] bottom-[45%]" },
-        //     { left: 30, bottom: 35, pos: "left-[30%] bottom-[35%]" }
-        // ]
     ];
 
     const [stage, setStage] = useState(0);
     const [time, setTime] = useState(STAGE_TIME);
     const [life, setLife] = useState(STAGE_LIFE);
     const [hint, setHint] = useState(STAGE_HINT);
-    const [isOver, setIsOver] = useState(false);
+    const [hintIdx, setHintIdx] = useState(-1);
     const [type, setType] = useState(0); // over, ing, clear
     const intervalRef = useRef<any>(null);
-
     const settingStage = (isReset: boolean) => {
         setTimeout(() => {
             setStage(isReset ? 0 : (prev) => prev + 1);
             setTime(STAGE_TIME);
             setLife(STAGE_LIFE);
             setHint(STAGE_HINT);
-            setPointStates(getListState)
-            setType(0);  
+            setHintIdx(-1);
+            setPointStates(getListState);
+            setType(0);
         }, isReset ? 0 : 1000);
-
-        // setStage(isReset ? 0 : (prev) => prev + 1);
-        // setTime(STAGE_TIME);
-        // setLife(STAGE_LIFE);
-        // setHint(STAGE_HINT);
-        // setPointStates(getListState)
-        // setType(0);
-        // setIsOver(false);
     };
 
     const getListState = () => {
@@ -97,37 +77,25 @@ const SpotTheDifference = () => {
     };
     const [pointStates, setPointStates] = useState(getListState);
 
-    // useEffect(() => {
-
-    // }, []);
-
     useEffect(() => {
 
         intervalRef.current = setInterval(() => {
             setTime((prevTime) => prevTime - 1);
         }, 1000);
 
-        // const timer = setInterval(() => {
-        //     setTime((prevTime) => prevTime - 1);
-        // }, 1000);
-
         if (time <= 0) {
             clearInterval(intervalRef.current);
-            // clearInterval(timer);
-            // setIsOver(true);
             setType(-1);
         }
 
         return () => {
             clearInterval(intervalRef.current);
-            // clearInterval(timer);
         };
     }, [time]);
 
     useEffect(() => {
         if (life <= 0) {
             clearInterval(intervalRef.current);
-            // setIsOver(true);
             setType(-1);
         }
     }, [life]);
@@ -144,10 +112,6 @@ const SpotTheDifference = () => {
             }
         }
     }, [pointStates]);
-
-    const settingGameOver = () => {
-
-    };
 
     const onClickImage = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         const target = event.currentTarget;
@@ -187,70 +151,20 @@ const SpotTheDifference = () => {
             setPointStates([...pointStates]);
             // pointStates[successIdx] = true;
             // console.log("### successIdx: " + successIdx + " / pointStates: " + pointStates);
-
         }
     };
 
-    /*
-        const onClickImage = (event: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
-            if (!imageRef.current) return;
-    
-            console.log("#### test: " + event.currentTarget.naturalWidth);
-            const target = event.currentTarget;
-            const rect = event.currentTarget.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-    
-            const width = imageRef.current.width;
-            const height = imageRef.current.height;
-    
-            const clickX = Math.round((x / width) * 100) / 100;
-            const clickY = Math.round((y / height) * 100) / 100;
-    
-            const naturalWidth = target.naturalWidth;
-            const naturalHeight = target.naturalHeight;
-    
-            const points: point[] = stagePoint[0];
-    
-            let successIdx: number = -1;
-    
-            console.log("#### clickX: " + clickX + " / clickY: " + clickY);
-    
-            points.forEach(function (p, i) {
-                if (!pointStates[stage][i]) {
-                    const pointX = Math.round((p.x / naturalWidth) * 100) / 100;
-                    const pointY = Math.round((p.y / naturalHeight) * 100) / 100;
-                    console.log("#### pointX: " + pointX + " / pointY: " + pointY);
-    
-                    if (Math.abs(clickX - pointX) <= 0.05 && Math.abs(clickY - pointY) <= 0.05) {
-                        // console.log("#### x: " + x + " / y: " + y + " / width: " + width + " / height: " + height + " / clickX: " + clickX + " / clickY: " + clickY);
-                        console.log("###");
-                        successIdx = i;
-    
-                    }
-                }
-            });
-    
-            // for (const p of points) {
-            //     // console.log(p);
-            //     const pointX = Math.round((p.x / naturalWidth) * 100) / 100;
-            //     const pointY = Math.round((p.y / naturalHeight) * 100) / 100;
-            //     // console.log("### pointX: " + pointX + " / pointY: " + pointY);
-    
-            //     console.log("#### clickX: " + clickX + " / pointX: " + pointX + " / clickY: " + clickY + " / pointY: " + pointY + " / successIdx: " + successIdx);
-            //     if (Math.abs(clickX - pointX) <= 0.05 && Math.abs(clickY - pointY) <= 0.05) {
-            //         // console.log("#### x: " + x + " / y: " + y + " / width: " + width + " / height: " + height + " / clickX: " + clickX + " / clickY: " + clickY);
-            //         successIdx 
-            //         break;
-            //     } else {
-    
-            //     }
-            // }
-    
-            // console.log("#### x: " + x + " / y: " + y + " / width: " + width + " / height: " + height + " / clickX: " + clickX + " / clickY: " + clickY);
-        };
-    */
 
+    const onClickHint = () => {
+        console.log("######## onClickHint hint: " + hint + " / type: " + type);
+        if (hint <= 0 || type !== 0 || hintIdx !== -1) return;
+
+        const idx = pointStates.findIndex(p => {
+            return p === false;
+        });
+        setHintIdx(idx);
+        setHint((prev) => prev - 1);
+    };
 
     return (
         <div className="w-full h-screen bg-stone-100">
@@ -287,8 +201,22 @@ const SpotTheDifference = () => {
                         <div className="w-1/2 h-full right-0 relative flex items-center border-r-2">
                             <img src={stageImg[stage][0]} alt="" className="absolute w-full h-full object-contain" />
 
-                            <div className="absolute w-full h-full" onClick={onClickImage}>
+                            <div className="absolute w-full h-full">
+                                {
+                                    hintIdx !== -1 &&
+                                    <motion.div className={"absolute rounded-full origin-center bg-white shadow-[0px_0px_25px_30px] shadow-white " + stagePoint[stage][hintIdx].pos} key={"hint_" + hintIdx}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: [0, 1, 0] }}
+                                        transition={{ duration: 2, ease: "easeOut" }}
+                                        onAnimationComplete={() => {
+                                            setHintIdx(-1);
+                                        }}
+                                    >
+                                    </motion.div>
+                                }
+                            </div>
 
+                            <div className="absolute w-full h-full" onClick={onClickImage}>
                                 {
                                     stagePoint[stage].map((p, index) => (
                                         // <div className={"absolute w-[30px] h-[30px] rounded-full border-4 border-[#ae8366] opacity-80 -translate-x-1/2 translate-y-1/2 " + (pointStates[index] === true ? "visible " : "invisible ") + stagePoint[stage][index].pos + " animation-scale-up"} key={"point_" + index}></div>
@@ -301,11 +229,26 @@ const SpotTheDifference = () => {
                         <div className="w-1/2 h-full right-0 relative flex items-center border-l-2">
                             <img src={stageImg[stage][1]} alt="" className="absolute w-full h-full object-contain" />
 
+                            <div className="absolute w-full h-full">
+                                {
+                                    hintIdx !== -1 &&
+                                    <motion.div className={"absolute rounded-full origin-center bg-white shadow-[0px_0px_25px_30px] shadow-white " + stagePoint[stage][hintIdx].pos} key={"hint_" + hintIdx}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: [0, 1, 0] }}
+                                        transition={{ duration: 2, ease: "easeOut" }}
+                                        onAnimationComplete={() => {
+                                            setHintIdx(-1);
+                                        }}
+                                    >
+                                    </motion.div>
+                                }
+                            </div>
+                            
                             <div className="absolute w-full h-full" onClick={onClickImage}>
                                 {
                                     stagePoint[stage].map((p, index) => (
                                         <div className={"absolute w-[30px] ml-[-15px] h-[30px] mb-[-15px] rounded-full border-4 border-[#ae8366] opacity-80 origin-center " + (pointStates[index] === true ? "block " : "hidden ") + stagePoint[stage][index].pos + " animate-scaleUp"} key={"point_" + index}></div>
-                                     ))
+                                    ))
                                 }
                             </div>
                         </div>
@@ -322,7 +265,7 @@ const SpotTheDifference = () => {
 
                 <div className="w-4/5 flex row gap-x-10 justify-between">
                     <div className="text-3xl font-semibold">Count: {pointStates.filter((s) => s === true).length} / {pointStates.length}</div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2" onClick={onClickHint}>
                         <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/lightbulb-line.png'} alt="" className="w-9 object-contain" />
                         <div className="text-3xl font-semibold">{hint}</div>
                     </div>

@@ -6,6 +6,7 @@ module.exports = {
       animation: {
         scaleUp: "scale-up 0.2s",
         fadeOut: "fade-out 0.15s forwards",
+        pingOn: "ping-on 2.5s forwards",
       },
       keyframes: {
         'scale-up': {
@@ -16,6 +17,14 @@ module.exports = {
         'fade-out': {
           '0%': { opacity: 1 },
           '100%': { opacity: 0, display: 'none' }
+        },
+        'ping-on': {
+          '0%': { opacity: 0},
+          '50%': { opacity: 1 },
+          '100%': { opacity: 0 }
+          // '0%': { opacity: 0, display: 'block'},
+          // '50%': { opacity: 1 },
+          // '100%': { opacity: 0, display: 'none' }
         },
       }
     },
