@@ -11,7 +11,8 @@ const SideBar = () => {
             <NavLink to="/" className="">홈</NavLink>
             <NavLink to="/SpotTheDifference" className="">틀린그림찾기</NavLink>
             <NavLink to="/FindOldArtwork" className="">오래된작품찾기</NavLink>
-            // 스도쿠, 지뢰찾기
+            <NavLink to="/Minesweeper" className="">지뢰찾기</NavLink>
+            // 스도쿠
         </div>
     );
 }

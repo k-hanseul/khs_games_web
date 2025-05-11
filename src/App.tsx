@@ -7,6 +7,7 @@ import MenuBar from './components/MenuBar';
 import Home from './components/Home';
 import SpotTheDifference from './components/SpotTheDifference';
 import FindOldArtwork from './components/FindOldArtwork';
+import Minesweeper from './components/Minesweeper';
 
 function App() {
   return (
@@ -15,9 +16,9 @@ function App() {
       <MenuBar />
         <Routes>
           <Route path="/" element={<Home />} />
-          {/* <Route path="/" element={<SpotTheDifference />} /> */}
           <Route path="/SpotTheDifference" element={<SpotTheDifference />} />
           <Route path="/FindOldArtwork" element={<FindOldArtwork />} />
+          <Route path="/Minesweeper" element={<Minesweeper />} />
         </Routes>
       </HashRouter>
 

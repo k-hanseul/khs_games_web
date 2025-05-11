@@ -59,6 +59,7 @@ const SpotTheDifference = () => {
     const [hintIdx, setHintIdx] = useState(-1);
     const [type, setType] = useState(0); // over, ing, clear
     const intervalRef = useRef<any>(null);
+    
     const settingStage = (isReset: boolean) => {
         setTimeout(() => {
             setStage(isReset ? 0 : (prev) => prev + 1);
@@ -168,7 +169,7 @@ const SpotTheDifference = () => {
 
     return (
         <div className="w-full h-screen bg-stone-100">
-            <div className="py-10 w-[750px] h-full justify-items-center space-y-2 justify-self-center">
+            <div className="py-10 w-full h-full justify-items-center space-y-2 justify-self-center">
                 <div className="text-4xl font-bold">stage {stage + 1}</div>
                 <div className="w-4/5 flex row gap-x-10 justify-between">
                     <div className="flex gap-x-1">
@@ -243,7 +244,7 @@ const SpotTheDifference = () => {
                                     </motion.div>
                                 }
                             </div>
-                            
+
                             <div className="absolute w-full h-full" onClick={onClickImage}>
                                 {
                                     stagePoint[stage].map((p, index) => (
