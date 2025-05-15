@@ -13,7 +13,7 @@ function App() {
   return (
     <div className="App flex flex-row">
       <HashRouter>
-      <MenuBar />
+      {/* <MenuBar /> */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/SpotTheDifference" element={<SpotTheDifference />} />
