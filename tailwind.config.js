@@ -7,6 +7,8 @@ module.exports = {
         scaleUp: "scale-up 0.2s",
         fadeOut: "fade-out 0.15s forwards",
         pingOn: "ping-on 2.5s forwards",
+        catLose: "cat-lose 1.5s forwards ease-in-out",
+        catWin: "cat-win 1.5s forwards ease-in-out",
       },
       keyframes: {
         'scale-up': {
@@ -22,10 +24,17 @@ module.exports = {
           '0%': { opacity: 0},
           '50%': { opacity: 1 },
           '100%': { opacity: 0 }
-          // '0%': { opacity: 0, display: 'block'},
-          // '50%': { opacity: 1 },
-          // '100%': { opacity: 0, display: 'none' }
         },
+        'cat-lose': {
+          '0%': {  transform: 'translateY(0%) scale(1)' },
+          '40%': { transform: 'translateY(15%) scale(0.9)' },
+          '100%': {  transform: 'translateY(0%) scale(1)' },
+        },
+        'cat-win': {
+          '0%': {  transform: 'translateY(0%) scale(1)' },
+          '30%': { transform: 'translateY(-20%) scale(1.1)' },
+          '100%': {  transform: 'translateY(0%) scale(1)' },
+        }, 
       }
     },
   },

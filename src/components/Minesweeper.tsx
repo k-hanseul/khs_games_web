@@ -17,41 +17,26 @@ type CellProps = {
 };
 
 const MineCell = ({ index, col, row }: CellProps) => {
-    const { gameData, changeStatus, openCell, flagCell } = useContext(gameContext);
+    const { gameData, openCell, flagCell } = useContext(gameContext);
 
-    const CELL_STYLE = {
-        OPEN: 0,
-        NOTHING: -1,
-        FLAG: -2,
-        MINE: -3,
-    }
-    
     const onLeftClickCell = () => {
-        if (gameData.status === "waiting") {
-            changeStatus("playing");
-        }
         openCell(col, row);
     };
 
     const onRightClickCell = (e: React.MouseEvent) => {
         e.preventDefault();
-        if (gameData.status === "waiting") {
-            changeStatus("playing");
-        }
         flagCell(col, row);
     };
-    
+
     const cellType = gameData.board[col][row];
-    
     return (
-        // <button className={"w-7 h-7 bg-stone-400"} onClick={() => onLeftClickCell()} onContextMenu={onRightClickCell}>
-        <button className={"w-9 h-9 bg-stone-400"} onClick={() => onLeftClickCell()} onContextMenu={onRightClickCell}>
-            {/* {index}:{col},{row} */}
-            {/* {gameData.board[col][row]} */}
+        <button className={"w-10 h-10 text-xl font-bold border-t-2 border-l-2 border-white " + (cellType >= 0 ? "bg-blue-100 border-none" : "bg-stone-400")} onClick={() => onLeftClickCell()} onContextMenu={onRightClickCell}>
             {
-            cellType === CELL_TYPE.FLAG && cellType === CELL_TYPE.FLAG ? "🚩" 
-            : cellType === CELL_TYPE.NOTHING ? ""
-            : String(cellType)
+                gameData.status === "over" && (cellType === CELL_TYPE.MINE || cellType === CELL_TYPE.MINE_FLAG) ? "💣"
+                    : gameData.status === "win" && (cellType === CELL_TYPE.MINE || cellType === CELL_TYPE.MINE_FLAG) ? "🎉"
+                        : cellType === CELL_TYPE.FLAG || cellType === CELL_TYPE.MINE_FLAG ? "🚩"
+                            : cellType > 0 ? String(cellType)
+                                : ""
             }
         </button>
     );
@@ -81,12 +66,12 @@ const MineBoard = () => {
 };
 
 const MineHeader = () => {
-    const { gameData, changeLevel, changeStatus } = useContext(gameContext);
+    const { gameData, initGameStage } = useContext(gameContext);
     const [time, setTime] = useState(0);
     const intervalRef = useRef<any>(null);
 
     useEffect(() => {
-        if (time >= 10) {
+        if (time >= 999) {
             clearInterval(intervalRef.current);
         }
     }, [time]);
@@ -109,15 +94,15 @@ const MineHeader = () => {
     }, [gameData.status]);
 
     return (
-        <div className="w-full">
-            <div className="text-3xl">{gameData.status === "win" ? "😻" : gameData.status === "over" ? "😿" : "😺"}</div>
+        <div className="w-full flex flex-col gap-y-2 text-lg">
+            <div className={"text-4xl " + (gameData.status === "over" ? "animate-catLose" : gameData.status === "win" ? "animate-catWin" : "")}>{gameData.status === "win" ? "😻" : gameData.status === "over" ? "😿" : "😺"}</div>
             <div className="w-full flex flex-row justify-between">
-                <div className="flex flex-row gap-4">
-                    <button className="" onClick={() => changeLevel("easy")}>easy</button>
-                    <button className="" onClick={() => changeLevel("normal")}>normal</button>
-                    <button className="" onClick={() => changeLevel("hard")}>hard</button>
+                <div className="flex flex-row gap-1">
+                    <button className="hover:bg-neutral-300 px-1 border-solid border-2 border-neutral-800 hover:border-neutral-600 rounded-xl active:bg-neutral-400" onClick={() => initGameStage("easy")}>easy</button>
+                    <button className="hover:bg-neutral-300 px-1 border-solid border-2 border-neutral-800 hover:border-neutral-600 rounded-xl active:bg-neutral-400" onClick={() => initGameStage("normal")}>normal</button>
+                    <button className="hover:bg-neutral-300 px-1 border-solid border-2 border-neutral-800 hover:border-neutral-600 rounded-xl active:bg-neutral-400" onClick={() => initGameStage("hard")}>hard</button>
                 </div>
-                <button className="" onClick={() => changeStatus("waiting")}>reset</button>
+                <button className={"hover:bg-neutral-300 px-1 border-solid border-2 border-neutral-800 hover:border-neutral-600 rounded-xl active:bg-neutral-400 " + (gameData.status === "win" || gameData.status === "over" ? "text-red-700" : "")} onClick={() => initGameStage(gameData.level)}>reset</button>
             </div>
             <div className="w-full flex flex-row justify-between">
                 <div className="flex flex-row gap-[2px]">
@@ -137,7 +122,6 @@ const MineHeader = () => {
 };
 
 const Minesweeper = () => {
-
     const [gameData, setGameData] = useState({
         level: "",// easy, normal, hard
         xy: 0,
@@ -150,15 +134,13 @@ const Minesweeper = () => {
 
     const findAroundMine = (col: number, row: number) => {
         let mineCount = 0;
-
+        // console.log("#### findAroundMine col: " + col + " / row: " + row);
         const board = gameData.board;
-        for (let y = row - 1; y <= row + 1; y++) {
-            for (let x = col - 1; x <= col + 1; x++) {
-                if (x === col && y === row) continue;
-                if (x >= 0 && x < board[0].length && y >= 0 && y < board.length) {
-                    if (board[y][x] === CELL_TYPE.MINE || board[y][x] === CELL_TYPE.MINE_FLAG) {
-                        mineCount++;
-                    }
+        for (let y = col - 1; y <= col + 1; y++) {
+            for (let x = row - 1; x <= row + 1; x++) {
+                if (y === col && x === row) continue;
+                if (y >= 0 && y < gameData.xy && x >= 0 && x < gameData.xy) {
+                    if (board[y][x] === CELL_TYPE.MINE || board[y][x] === CELL_TYPE.MINE_FLAG) mineCount++;
                 }
             }
         }
@@ -166,6 +148,33 @@ const Minesweeper = () => {
     }
 
     const aroundOpenCell = (col: number, row: number) => {
+        let board = JSON.parse(JSON.stringify(gameData.board));
+
+        const openCellRecursive = (col: number, row: number) => {
+            if (col < 0 || col >= gameData.xy || row < 0 || row >= gameData.xy) return;
+
+            const cell = board[col][row];
+
+            if (cell !== CELL_TYPE.NOTHING) return;
+
+            const mineCount = findAroundMine(col, row);
+            board[col][row] = mineCount;
+
+            if (mineCount === 0) {
+                for (let y = col - 1; y <= col + 1; y++) {
+                    for (let x = row - 1; x <= row + 1; x++) {
+                        if (y === row && x === col) {
+                            continue;
+                        }
+                        openCellRecursive(y, x);
+                    }
+                }
+            }
+        }
+
+        openCellRecursive(col, row);
+        // console.log("########## aroundOpenCell board: " + board);
+        return board;
     }
 
     const openCell = (col: number, row: number) => {
@@ -177,25 +186,28 @@ const Minesweeper = () => {
             return;
         }
 
-        const cell = data.board[col][row];
-        console.log("#### openCell["+col+"]["+row+"]: "+ cell);
+        let board = JSON.parse(JSON.stringify(data.board));
+        const cell = board[col][row];
+
+        if (cell >= 0) return;
 
         if (cell === CELL_TYPE.MINE) {
-            // changeStatus("over");
             data.status = "over";
-
         } else if (cell === CELL_TYPE.NOTHING) {
             const mineCount = findAroundMine(col, row);
             console.log("#### mineCount: " + mineCount);
             if (mineCount === 0) {
-                if (Math.random() > 0.5) {
-
-                }
-            }
-            data.board[col][row] = mineCount;
+                // 주변에 지뢰가 없을 경우 더 열기
+                board = aroundOpenCell(col, row);
+            } else board[col][row] = mineCount;
         }
+        data.board = board;
 
-        // checkGameResult();
+        const openCount = data.board.map((value) => value.filter((v) => v >= 0).length).reduce((pre, curr) => pre + curr);
+        console.log("#### openCount: " + openCount);
+
+        if (openCount === (data.xy * data.xy - data.mine)) data.status = "win";
+
         setGameData(data);
     }
 
@@ -208,32 +220,35 @@ const Minesweeper = () => {
             return;
         }
 
-        const cell = data.board[col][row];
-        console.log("#### flagCell["+col+"]["+row+"]: "+ cell);
-
+        let board = JSON.parse(JSON.stringify(data.board));
+        const cell = board[col][row];
         switch (cell) {
             case CELL_TYPE.MINE:
-                data.board[col][row] = CELL_TYPE.MINE_FLAG;
-                data.flag += 1;
+                if (data.flag < data.mine) {
+                    board[col][row] = CELL_TYPE.MINE_FLAG;
+                    data.flag += 1;
+                }
                 break;
             case CELL_TYPE.MINE_FLAG:
-                data.board[col][row] = CELL_TYPE.MINE;
+                board[col][row] = CELL_TYPE.MINE;
                 data.flag -= 1;
                 break;
             case CELL_TYPE.NOTHING:
-                data.board[col][row] = CELL_TYPE.FLAG;
-                data.flag += 1;
+                if (data.flag < data.mine) {
+                    board[col][row] = CELL_TYPE.FLAG;
+                    data.flag += 1;
+                }
                 break;
             case CELL_TYPE.FLAG:
-                data.board[col][row] = CELL_TYPE.NOTHING;
+                board[col][row] = CELL_TYPE.NOTHING;
                 data.flag -= 1;
                 break;
             default:
                 break;
         }
+        data.board = board;
 
         setGameData(data);
-        // checkGameResult();
     }
 
     const settingBoard = (xy: number, mine: number) => {
@@ -247,22 +262,20 @@ const Minesweeper = () => {
             mineData.push(chosen);
         }
         // console.log("### mineData: " + mineData);
-
         for (const m of mineData) {
             const x = m % xy;
             const y = Math.floor(m / xy);
             boardData[y][x] = CELL_TYPE.MINE;
-            console.log("### boardData[" + y + "][" + x + "]");
+            // console.log("### boardData[" + y + "][" + x + "]");
         }
-        boardData.forEach((bd, i) => {
-            console.log("### boardData[" + i + "]: " + bd);
-        });
+        // boardData.forEach((bd, i) => {
+        //     console.log("### boardData[" + i + "]: " + bd);
+        // });
         // console.log("### boardData: " + boardData.length);
-
         return boardData;
     };
 
-    const changeLevel = (level: string) => {
+    const initGameStage = (level: string = "easy") => {
         let data = { ...gameData };
 
         data.xy = 0;
@@ -274,15 +287,15 @@ const Minesweeper = () => {
         switch (level) {
             case "easy":
                 data.xy = 5;
-                data.mine = 5;
+                data.mine = 3;
                 break;
             case "normal":
                 data.xy = 10;
-                data.mine = 10;
+                data.mine = 8;
                 break;
             case "hard":
                 data.xy = 15;
-                data.mine = 15;
+                data.mine = 13;
                 break;
         }
 
@@ -292,27 +305,18 @@ const Minesweeper = () => {
         setGameData(data);
     };
 
-    const changeStatus = (status: string) => {
-        setGameData({
-            ...gameData,
-            status: status
-        });
-    };
-
     useEffect(() => {
-        changeLevel("easy");
+        initGameStage();
     }, []);
 
-
-    useEffect(() => {
-        console.log("########## gameData: " + JSON.stringify(gameData));
-    }, [gameData]);
-
+    // useEffect(() => {
+    //     console.log("########## gameData: " + JSON.stringify(gameData));
+    // }, [gameData.board]);
 
     return (
-        <div className="w-full h-screen bg-stone-100">
-            <gameContext.Provider value={{ gameData, changeLevel, changeStatus, openCell, flagCell }}>
-                <div className="py-10 h-full justify-items-center space-y-2 justify-self-center">
+        <div className="w-full h-full">
+            <gameContext.Provider value={{ gameData, initGameStage, openCell, flagCell }}>
+                <div className="py-8 h-full justify-items-center space-y-2 justify-self-center">
                     <MineHeader />
                     <MineBoard />
                 </div>
