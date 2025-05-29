@@ -10,20 +10,24 @@ const SpotTheDifference = () => {
     // 스테이지 이미지
     const stageImg: string[][] = [
         [
-            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_1_1.png',
-            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_1_2.png'
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_1_1.jpg',
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_1_2.jpg'
         ],
         [
-            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_2_1.png',
-            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_2_2.png'
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_2_1.jpg',
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_2_2.jpg'
         ],
         [
-            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_3_1.png',
-            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_3_2.png'
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_3_1.jpg',
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_3_2.jpg'
         ],
         [
-            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_4_1.png',
-            process.env.PUBLIC_URL + '/img/SpotTheDifference/_stage_4_2.png'
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_4_1.jpg',
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_4_2.jpg'
+        ],
+        [
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_5_1.jpg',
+            process.env.PUBLIC_URL + '/img/SpotTheDifference/stage_5_2.jpg'
         ],
     ];
 
@@ -31,24 +35,32 @@ const SpotTheDifference = () => {
     interface point { left: number, bottom: number, pos: string };
     const stagePoint: point[][] = [
         [
-            { left: 50.5, bottom: 72.5, pos: "left-[50.5%] bottom-[72.5%]" },
-            { left: 38, bottom: 40.5, pos: "left-[38%] bottom-[40.5%]" },
-            { left: 68.5, bottom: 40.5, pos: "left-[68.5%] bottom-[40.5%]" }
+            { left: 16.5, bottom: 62.5, pos: "left-[16.5%] bottom-[62.5%]" },
+            { left: 37, bottom: 50, pos: "left-[37%] bottom-[50%]" },
+            { left: 61, bottom: 47, pos: "left-[61%] bottom-[47%]" }
         ],
         [
-            { left: 52.5, bottom: 66.5, pos: "left-[52.5%] bottom-[66.5%]" },
-            { left: 62.5, bottom: 50.5, pos: "left-[62.5%] bottom-[50.5%]" },
-            { left: 82.5, bottom: 49.5, pos: "left-[82.5%] bottom-[49.5%]" }
+            { left: 53, bottom: 66.5, pos: "left-[53%] bottom-[66.5%]" },
+            { left: 64, bottom: 47.5, pos: "left-[64%] bottom-[47.5%]" },
+            { left: 84.5, bottom: 50, pos: "left-[84.5%] bottom-[50%]" }
         ],
         [
-            { left: 17, bottom: 61.5, pos: "left-[17%] bottom-[61.5%]" },
-            { left: 37, bottom: 49, pos: "left-[37%] bottom-[50%]" },
-            { left: 59.5, bottom: 44, pos: "left-[59.5%] bottom-[44%]" }
+            { left: 51.5, bottom: 74, pos: "left-[51.5%] bottom-[74%]" },
+            { left: 38.5, bottom: 40, pos: "left-[38.5%] bottom-[40%]" },
+            { left: 70.5, bottom: 40.5, pos: "left-[70.5%] bottom-[40.5%]" }
         ],
         [
-            { left: 41, bottom: 67.5, pos: "left-[41%] bottom-[67.5%]" },
-            { left: 64, bottom: 62.5, pos: "left-[64%] bottom-[62.5%]" },
-            { left: 87.5, bottom: 48.5, pos: "left-[87.5%] bottom-[48.5%]" }
+            { left: 41, bottom: 68.5, pos: "left-[41%] bottom-[68.5%]" },
+            { left: 65.5, bottom: 63.5, pos: "left-[65.5%] bottom-[63.5%]" },
+            { left: 5, bottom: 45, pos: "left-[5%] bottom-[45%]" },
+            { left: 90, bottom: 49, pos: "left-[90%] bottom-[49%]" }
+        ],
+        [
+            { left: 68.5, bottom: 83, pos: "left-[68.5%] bottom-[83%]" },
+            { left: 23, bottom: 25, pos: "left-[23%] bottom-[25%]" },
+            { left: 75.5, bottom: 51, pos: "left-[75.5%] bottom-[51%]" },
+            { left: 33, bottom: 55.5, pos: "left-[33%] bottom-[55.5%]" },
+            { left: 52, bottom: 40, pos: "left-[52%] bottom-[40%]" }
         ],
     ];
 
@@ -194,12 +206,10 @@ const SpotTheDifference = () => {
                 {/* 게임 진행 시 */}
                 {type === 0 &&
                     <div className="w-[650px] h-[400px] flex transition-all transition-discrete duration-300 max-md:items-center max-md:flex-col max-md:w-[85%] max-md:h-[450px]">
-
                         {/* 왼쪽 이미지 영역 */}
                         <div className="w-1/2 h-full right-0 relative flex items-center">
-
                             <img src={stageImg[stage][0]} alt="" className="absolute w-full h-full object-contain" />
-                            {/* 정답 표기 */}
+                            {/* 힌트 표기 */}
                             <div className="absolute w-full h-full">
                                 {
                                     hintIdx !== -1 &&
@@ -214,11 +224,11 @@ const SpotTheDifference = () => {
                                     </motion.div>
                                 }
                             </div>
-                            {/* 힌트 표기 */}
+                            {/* 정답 표기 */}
                             <div className="absolute w-full h-full border-neutral-400 border-4 border-r-2 max-md:border-b-2 max-md:border-r-4" onClick={onClickImage}>
                                 {
                                     stagePoint[stage].map((p, index) => (
-                                        <div className={"absolute w-[30px] ml-[-15px] h-[30px] mb-[-15px] rounded-full border-4 border-[#ae8366] opacity-80 origin-center " + (pointStates[index] === true ? "block " : "hidden ") + stagePoint[stage][index].pos + " animate-scaleUp"} key={"point_" + index}></div>
+                                        <div className={"absolute w-[30px] ml-[-15px] h-[30px] mb-[-15px] rounded-full border-4 border-black opacity-80 origin-center " + (pointStates[index] === true ? "block " : "hidden ") + stagePoint[stage][index].pos + " animate-scaleUp"} key={"point_" + index}></div>
                                     ))
                                 }
                             </div>
@@ -227,7 +237,7 @@ const SpotTheDifference = () => {
                         {/* 오른쪽 이미지 영역 */}
                         <div className="w-1/2 h-full right-0 relative flex items-center">
                             <img src={stageImg[stage][1]} alt="" className="absolute w-full h-full object-contain" />
-                            {/* 정답 표기 */}
+                            {/* 힌트 표기 */}
                             <div className="absolute w-full h-full">
                                 {
                                     hintIdx !== -1 &&
@@ -242,11 +252,11 @@ const SpotTheDifference = () => {
                                     </motion.div>
                                 }
                             </div>
-                            {/* 힌트 표기 */}
+                            {/* 정답 표기 */}
                             <div className="absolute w-full h-full border-neutral-400 border-4 border-l-2 max-md:border-t-2 max-md:border-l-4" onClick={onClickImage}>
                                 {
                                     stagePoint[stage].map((p, index) => (
-                                        <div className={"absolute w-[30px] ml-[-15px] h-[30px] mb-[-15px] rounded-full border-4 border-[#ae8366] opacity-80 origin-center " + (pointStates[index] === true ? "block " : "hidden ") + stagePoint[stage][index].pos + " animate-scaleUp"} key={"point_" + index}></div>
+                                        <div className={"absolute w-[30px] ml-[-15px] h-[30px] mb-[-15px] rounded-full border-4 border-black opacity-80 origin-center " + (pointStates[index] === true ? "block " : "hidden ") + stagePoint[stage][index].pos + " animate-scaleUp"} key={"point_" + index}></div>
                                     ))
                                 }
                             </div>
