@@ -5,7 +5,7 @@ import { motion, AnimatePresence, easeIn } from 'framer-motion';
 const SpotTheDifference = () => {
     const STAGE_LIFE: number = 3;
     const STAGE_HINT: number = 2;
-    const STAGE_TIME: number = 50;
+    const STAGE_TIME: number = 300;
 
     // 스테이지 이미지
     const stageImg: string[][] = [
@@ -59,7 +59,7 @@ const SpotTheDifference = () => {
     const [hintIdx, setHintIdx] = useState(-1);
     const [type, setType] = useState(0); // over, ing, clear
     const intervalRef = useRef<any>(null);
-    
+
     const settingStage = (isReset: boolean) => {
         setTimeout(() => {
             setStage(isReset ? 0 : (prev) => prev + 1);
@@ -114,6 +114,7 @@ const SpotTheDifference = () => {
         }
     }, [pointStates]);
 
+    // 클릭한 영역 체크
     const onClickImage = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
         const target = event.currentTarget;
         const rect = target.getBoundingClientRect();
@@ -131,7 +132,7 @@ const SpotTheDifference = () => {
 
         let successIdx: number = -1;
 
-        console.log("#### clickX: " + clickX + " / clickY: " + clickY); // 클릭 한 곳의 좌측 하단 기준 좌표 퍼센테이지지
+        console.log("#### clickX: " + clickX + " / clickY: " + clickY); // 클릭 한 곳의 좌측 하단 기준 좌표 퍼센테이지
 
         points.forEach(function (p, i) {
             // console.log("#### p: " + JSON.stringify(p) + " / pointStates["+i+"]: " + pointStates[i]);
@@ -139,7 +140,6 @@ const SpotTheDifference = () => {
                 // console.log("#### pointX: " + pointX + " / pointY: " + pointY);
                 if (Math.abs(clickX - p.left) <= 5 && Math.abs(clickY - p.bottom) <= 5) {
                     // console.log("#### x: " + x + " / y: " + y + " / width: " + width + " / height: " + height + " / clickX: " + clickX + " / clickY: " + clickY);
-                    console.log("###");
                     successIdx = i;
                 }
             }
@@ -150,12 +150,10 @@ const SpotTheDifference = () => {
         } else {
             pointStates[successIdx] = !pointStates[successIdx];
             setPointStates([...pointStates]);
-            // pointStates[successIdx] = true;
-            // console.log("### successIdx: " + successIdx + " / pointStates: " + pointStates);
         }
     };
 
-
+    // 힌트 선택 시 영역에 효과 주기
     const onClickHint = () => {
         console.log("######## onClickHint hint: " + hint + " / type: " + type);
         if (hint <= 0 || type !== 0 || hintIdx !== -1) return;
@@ -168,40 +166,40 @@ const SpotTheDifference = () => {
     };
 
     return (
-        <div className="w-full h-screen bg-stone-100">
+        <div className="w-full h-full">
             <div className="py-10 w-full h-full justify-items-center space-y-2 justify-self-center">
                 <div className="text-4xl font-bold">stage {stage + 1}</div>
-                <div className="w-4/5 flex row gap-x-10 justify-between">
+                <div className="w-[625px] max-md:w-[80%] flex row gap-x-10 justify-between">
                     <div className="flex gap-x-1">
                         {
                             [...Array(STAGE_LIFE)].map((l, i) => (
                                 <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/heart-3-fill.png'} alt="" key={"heart_" + i} className={"w-9 object-contain " + (life > i ? "block " : "animate-fadeOut")} />
                             ))
                         }
-                        {/* {
-                            [...Array(STAGE_LIFE)].map((l, i) => (
-                                <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/heart-3-line.png'} alt="" key={"heart_" + i} className={"w-9 object-contain " + (life <= i ? "block " : "hidden ")} />
-                            ))
-                        } */}
                     </div>
                     <div className="flex gap-2">
                         <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/timer-2-line.png'} alt="" className="w-9 object-contain" />
-                        <div className={"w-12 text-left text-3xl font-semibold " + (time > 10 ? "text-black" : "text-red-700")}>{time}</div>
+                        <div className={"w-14 text-3xl font-semibold " + (time > 10 ? "text-black" : "text-red-700")}>{time}</div>
                     </div>
                 </div>
 
+                {/* 스테이지 모두 클리어 시 */}
                 {type === 1 &&
-                    <div className="w-[650px] h-[400px] bg-neutral-900 flex justify-center flex-col items-center gap-4 animate-fade duration-150">
+                    <div className="w-[650px] max-md:w-[85%] h-[400px] bg-neutral-900 flex justify-center flex-col items-center gap-4 animate-fade duration-150">
                         <div className="text-3xl font- text-white animate-bounce">GAME CLEAR</div>
-                        <div className=" bg-gray-200 rounded-full text-2xl font-bold w-36 h-10 place-content-center" onClick={() => settingStage(true)} >RESET</div>
+                        <button className=" bg-gray-200 rounded-full text-2xl font-bold w-36 h-10 place-content-center" onClick={() => settingStage(true)} >RESET</button>
                     </div>
                 }
 
+                {/* 게임 진행 시 */}
                 {type === 0 &&
-                    <div className="w-[650px] h-[400px] flex transition-all transition-discrete duration-300">
-                        <div className="w-1/2 h-full right-0 relative flex items-center border-r-2">
+                    <div className="w-[650px] h-[400px] flex transition-all transition-discrete duration-300 max-md:items-center max-md:flex-col max-md:w-[85%] max-md:h-[450px]">
+
+                        {/* 왼쪽 이미지 영역 */}
+                        <div className="w-1/2 h-full right-0 relative flex items-center">
+
                             <img src={stageImg[stage][0]} alt="" className="absolute w-full h-full object-contain" />
-
+                            {/* 정답 표기 */}
                             <div className="absolute w-full h-full">
                                 {
                                     hintIdx !== -1 &&
@@ -216,20 +214,20 @@ const SpotTheDifference = () => {
                                     </motion.div>
                                 }
                             </div>
-
-                            <div className="absolute w-full h-full" onClick={onClickImage}>
+                            {/* 힌트 표기 */}
+                            <div className="absolute w-full h-full border-neutral-400 border-4 border-r-2 max-md:border-b-2 max-md:border-r-4" onClick={onClickImage}>
                                 {
                                     stagePoint[stage].map((p, index) => (
-                                        // <div className={"absolute w-[30px] h-[30px] rounded-full border-4 border-[#ae8366] opacity-80 -translate-x-1/2 translate-y-1/2 " + (pointStates[index] === true ? "visible " : "invisible ") + stagePoint[stage][index].pos + " animation-scale-up"} key={"point_" + index}></div>
                                         <div className={"absolute w-[30px] ml-[-15px] h-[30px] mb-[-15px] rounded-full border-4 border-[#ae8366] opacity-80 origin-center " + (pointStates[index] === true ? "block " : "hidden ") + stagePoint[stage][index].pos + " animate-scaleUp"} key={"point_" + index}></div>
                                     ))
                                 }
                             </div>
                         </div>
 
-                        <div className="w-1/2 h-full right-0 relative flex items-center border-l-2">
+                        {/* 오른쪽 이미지 영역 */}
+                        <div className="w-1/2 h-full right-0 relative flex items-center">
                             <img src={stageImg[stage][1]} alt="" className="absolute w-full h-full object-contain" />
-
+                            {/* 정답 표기 */}
                             <div className="absolute w-full h-full">
                                 {
                                     hintIdx !== -1 &&
@@ -244,8 +242,8 @@ const SpotTheDifference = () => {
                                     </motion.div>
                                 }
                             </div>
-
-                            <div className="absolute w-full h-full" onClick={onClickImage}>
+                            {/* 힌트 표기 */}
+                            <div className="absolute w-full h-full border-neutral-400 border-4 border-l-2 max-md:border-t-2 max-md:border-l-4" onClick={onClickImage}>
                                 {
                                     stagePoint[stage].map((p, index) => (
                                         <div className={"absolute w-[30px] ml-[-15px] h-[30px] mb-[-15px] rounded-full border-4 border-[#ae8366] opacity-80 origin-center " + (pointStates[index] === true ? "block " : "hidden ") + stagePoint[stage][index].pos + " animate-scaleUp"} key={"point_" + index}></div>
@@ -257,14 +255,15 @@ const SpotTheDifference = () => {
                     </div>
                 }
 
+                {/* 하트나 카운트 모두 소진 시 */}
                 {type === -1 &&
-                    <div className="w-[650px] h-[400px] bg-neutral-900 flex justify-center flex-col items-center gap-4 animate-fade duration-150">
+                    <div className="w-[650px] max-md:w-[85%] h-[400px] bg-neutral-900 flex justify-center flex-col items-center gap-4 animate-fade duration-150">
                         <div className="text-3xl font- text-white animate-bounce">GAME OVER</div>
-                        <div className=" bg-gray-200 rounded-full text-2xl font-bold w-36 h-10 place-content-center" onClick={() => settingStage(true)} >RESET</div>
+                        <button className=" bg-gray-200 rounded-full text-2xl font-bold w-36 h-10 place-content-center" onClick={() => settingStage(true)} >RESET</button>
                     </div>
                 }
 
-                <div className="w-4/5 flex row gap-x-10 justify-between">
+                <div className="w-[625px] max-md:w-[80%] flex row gap-x-10 justify-between">
                     <div className="text-3xl font-semibold">Count: {pointStates.filter((s) => s === true).length} / {pointStates.length}</div>
                     <div className="flex gap-2" onClick={onClickHint}>
                         <img src={process.env.PUBLIC_URL + '/img/SpotTheDifference/lightbulb-line.png'} alt="" className="w-9 object-contain" />

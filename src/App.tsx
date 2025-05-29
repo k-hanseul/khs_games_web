@@ -12,8 +12,9 @@ import Minesweeper from './components/Minesweeper';
 function App() {
   return (
     <div className="App flex flex-row">
+      {/* <div className="App"> */}
       <HashRouter>
-      {/* <MenuBar /> */}
+      <MenuBar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/SpotTheDifference" element={<SpotTheDifference />} />

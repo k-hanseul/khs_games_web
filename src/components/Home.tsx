@@ -1,6 +1,6 @@
 const Home = () => {
     return (
-        <div className="w-full h-screen bg-stone-100 py-10">
+        <div className="w-full h-screen content-center">
             <div className="text-4xl">
             ♤
             <br/>

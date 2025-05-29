@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, createContext, useContext, useMemo } from "react";
 import { motion, AnimatePresence, easeIn, number } from 'framer-motion';
+import { useLongPress } from 'use-long-press';
 
 const gameContext = createContext<any>({});
 const CELL_TYPE = {
@@ -28,9 +29,22 @@ const MineCell = ({ index, col, row }: CellProps) => {
         flagCell(col, row);
     };
 
+    const onLongClickCell = () => {
+        flagCell(col, row);
+    };
+
+    const bind = useLongPress(onLongClickCell, {
+        onCancel: event => {
+            // 길게 누르지 않은 경우 호출
+            openCell(col, row);
+        },
+        threshold: 500, // 길게 누르는 시간
+        captureEvent: true, // 이벤트 처리 후 지워지지 않는지
+    });
+
     const cellType = gameData.board[col][row];
     return (
-        <button className={"w-10 h-10 text-xl font-bold border-t-2 border-l-2 border-white " + (cellType >= 0 ? "bg-blue-100 border-none" : "bg-stone-400")} onClick={() => onLeftClickCell()} onContextMenu={onRightClickCell}>
+        <button {...bind()} onContextMenu={(e) => e.preventDefault()} className={"w-10 h-10 text-xl font-bold border-t-2 border-l-2 border-white " + (cellType >= 0 ? "bg-blue-100 border-none " : "bg-stone-400 ") + (gameData.level === "hard" ? "max-md:w-7 max-md:h-7" : "")}>
             {
                 gameData.status === "over" && (cellType === CELL_TYPE.MINE || cellType === CELL_TYPE.MINE_FLAG) ? "💣"
                     : gameData.status === "win" && (cellType === CELL_TYPE.MINE || cellType === CELL_TYPE.MINE_FLAG) ? "🎉"
@@ -39,6 +53,15 @@ const MineCell = ({ index, col, row }: CellProps) => {
                                 : ""
             }
         </button>
+        // <button className={"w-10 h-10 text-xl font-bold border-t-2 border-l-2 border-white " + (cellType >= 0 ? "bg-blue-100 border-none " : "bg-stone-400 ") + (gameData.level === "hard" ? "max-md:w-7 max-md:h-7" : "")} onClick={() => onLeftClickCell()} onContextMenu={onRightClickCell}>
+        //     {
+        //         gameData.status === "over" && (cellType === CELL_TYPE.MINE || cellType === CELL_TYPE.MINE_FLAG) ? "💣"
+        //             : gameData.status === "win" && (cellType === CELL_TYPE.MINE || cellType === CELL_TYPE.MINE_FLAG) ? "🎉"
+        //                 : cellType === CELL_TYPE.FLAG || cellType === CELL_TYPE.MINE_FLAG ? "🚩"
+        //                     : cellType > 0 ? String(cellType)
+        //                         : ""
+        //     }
+        // </button>
     );
 };
 
@@ -98,23 +121,23 @@ const MineHeader = () => {
             <div className={"text-4xl " + (gameData.status === "over" ? "animate-catLose" : gameData.status === "win" ? "animate-catWin" : "")}>{gameData.status === "win" ? "😻" : gameData.status === "over" ? "😿" : "😺"}</div>
             <div className="w-full flex flex-row justify-between">
                 <div className="flex flex-row gap-1">
-                    <button className="hover:bg-neutral-300 px-1 border-solid border-2 border-neutral-800 hover:border-neutral-600 rounded-xl active:bg-neutral-400" onClick={() => initGameStage("easy")}>easy</button>
-                    <button className="hover:bg-neutral-300 px-1 border-solid border-2 border-neutral-800 hover:border-neutral-600 rounded-xl active:bg-neutral-400" onClick={() => initGameStage("normal")}>normal</button>
-                    <button className="hover:bg-neutral-300 px-1 border-solid border-2 border-neutral-800 hover:border-neutral-600 rounded-xl active:bg-neutral-400" onClick={() => initGameStage("hard")}>hard</button>
+                    <button className={"hover:bg-neutral-300 px-1 border-solid border-2 border-neutral-800 hover:border-neutral-600 rounded-xl active:bg-neutral-400 " + (gameData.level === "easy" ? "bg-neutral-400" : "")} onClick={() => initGameStage("easy")}>easy</button>
+                    <button className={"hover:bg-neutral-300 px-1 border-solid border-2 border-neutral-800 hover:border-neutral-600 rounded-xl active:bg-neutral-400 " + (gameData.level === "normal" ? "bg-neutral-400" : "")} onClick={() => initGameStage("normal")}>normal</button>
+                    <button className={"hover:bg-neutral-300 px-1 border-solid border-2 border-neutral-800 hover:border-neutral-600 rounded-xl active:bg-neutral-400 " + (gameData.level === "hard" ? "bg-neutral-400" : "")} onClick={() => initGameStage("hard")}>hard</button>
                 </div>
                 <button className={"hover:bg-neutral-300 px-1 border-solid border-2 border-neutral-800 hover:border-neutral-600 rounded-xl active:bg-neutral-400 " + (gameData.status === "win" || gameData.status === "over" ? "text-red-700" : "")} onClick={() => initGameStage(gameData.level)}>reset</button>
             </div>
             <div className="w-full flex flex-row justify-between">
-                <div className="flex flex-row gap-[2px]">
-                    <div className="">mine :</div>
-                    <div className="">{gameData.flag}</div>
+                <div className="flex flex-row">
+                    <div className="">mine :&nbsp;</div>
+                    <div className="w-4">{gameData.flag}</div>
                     <div className="">/</div>
-                    <div className="">{gameData.mine}</div>
+                    <div className="w-4">{gameData.mine}</div>
 
                 </div>
-                <div className="flex flex-row gap-[2px]">
-                    <div className="">time :</div>
-                    <div className="">{time}</div>
+                <div className="flex flex-row">
+                    <div className="">time :&nbsp;</div>
+                    <div className="w-8">{time}</div>
                 </div>
             </div>
         </div>
@@ -132,6 +155,7 @@ const Minesweeper = () => {
         status: "" // waiting, playing, win, over
     });
 
+    // 주변 지뢰 찾기
     const findAroundMine = (col: number, row: number) => {
         let mineCount = 0;
         // console.log("#### findAroundMine col: " + col + " / row: " + row);
@@ -147,6 +171,7 @@ const Minesweeper = () => {
         return mineCount;
     }
 
+    // 주변 빈칸 오픈
     const aroundOpenCell = (col: number, row: number) => {
         let board = JSON.parse(JSON.stringify(gameData.board));
 
@@ -177,6 +202,7 @@ const Minesweeper = () => {
         return board;
     }
 
+    // 좌클릭 선택한 칸 오픈
     const openCell = (col: number, row: number) => {
         let data = { ...gameData };
 
@@ -211,6 +237,7 @@ const Minesweeper = () => {
         setGameData(data);
     }
 
+    // 우클릭 깃발 on off 처리
     const flagCell = (col: number, row: number) => {
         let data = { ...gameData };
 
@@ -261,12 +288,11 @@ const Minesweeper = () => {
             const chosen = temp.splice(randomIndex, 1)[0];
             mineData.push(chosen);
         }
-        // console.log("### mineData: " + mineData);
+
         for (const m of mineData) {
             const x = m % xy;
             const y = Math.floor(m / xy);
             boardData[y][x] = CELL_TYPE.MINE;
-            // console.log("### boardData[" + y + "][" + x + "]");
         }
         // boardData.forEach((bd, i) => {
         //     console.log("### boardData[" + i + "]: " + bd);
@@ -309,16 +335,13 @@ const Minesweeper = () => {
         initGameStage();
     }, []);
 
-    // useEffect(() => {
-    //     console.log("########## gameData: " + JSON.stringify(gameData));
-    // }, [gameData.board]);
-
     return (
         <div className="w-full h-full">
             <gameContext.Provider value={{ gameData, initGameStage, openCell, flagCell }}>
                 <div className="py-8 h-full justify-items-center space-y-2 justify-self-center">
                     <MineHeader />
                     <MineBoard />
+                    <div>꾹~누르면 깃발을 체크 및 해제 할 수 있어요</div>
                 </div>
             </gameContext.Provider>
 
