@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/khs_games_web/static/css/main.2e38dad4.css",
-    "main.js": "/khs_games_web/static/js/main.c233ca5b.js",
+    "main.css": "/khs_games_web/static/css/main.ed27def4.css",
+    "main.js": "/khs_games_web/static/js/main.ed88f91a.js",
     "static/js/453.ac9328da.chunk.js": "/khs_games_web/static/js/453.ac9328da.chunk.js",
     "index.html": "/khs_games_web/index.html",
-    "main.2e38dad4.css.map": "/khs_games_web/static/css/main.2e38dad4.css.map",
-    "main.c233ca5b.js.map": "/khs_games_web/static/js/main.c233ca5b.js.map",
+    "main.ed27def4.css.map": "/khs_games_web/static/css/main.ed27def4.css.map",
+    "main.ed88f91a.js.map": "/khs_games_web/static/js/main.ed88f91a.js.map",
     "453.ac9328da.chunk.js.map": "/khs_games_web/static/js/453.ac9328da.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.2e38dad4.css",
-    "static/js/main.c233ca5b.js"
+    "static/css/main.ed27def4.css",
+    "static/js/main.ed88f91a.js"
   ]
 }
